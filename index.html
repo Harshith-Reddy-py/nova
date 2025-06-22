@@ -346,6 +346,7 @@
       display: flex;
       gap: 0.5rem;
       margin-top: 0.5rem;
+      flex-direction: column;
     }
 
     .voice-option {
@@ -444,6 +445,29 @@
       margin: 0.5rem 0;
       color: var(--text-secondary);
     }
+
+    /* Voice control button in header */
+    .voice-control {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-left: auto;
+    }
+
+    .voice-toggle {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .voice-toggle.active {
+      color: var(--primary);
+    }
   </style>
 </head>
 <body>
@@ -452,6 +476,11 @@
       <div class="logo">
         <span class="logo-icon">✨</span>
         <span>Nova AI</span>
+      </div>
+      <div class="voice-control">
+        <button class="voice-toggle" id="voice-toggle" title="Toggle voice output">
+          <span class="btn-icon">🔊</span>
+        </button>
       </div>
       <button class="settings-btn" id="settings-btn">⚙️</button>
     </header>
@@ -502,7 +531,7 @@
       <div class="setting-title">Voice Settings</div>
       
       <div class="toggle-label">
-        <span>Enable Speech</span>
+        <span>Enable Speech Output</span>
         <label class="toggle-switch">
           <input type="checkbox" id="speech-toggle" checked>
           <span class="slider"></span>
@@ -550,6 +579,7 @@
     const userInput = document.getElementById('user-input');
     const sendBtn = document.getElementById('send-btn');
     const micBtn = document.getElementById('mic-btn');
+    const voiceToggle = document.getElementById('voice-toggle');
     const settingsBtn = document.getElementById('settings-btn');
     const closeSettings = document.getElementById('close-settings');
     const settingsPanel = document.getElementById('settings-panel');
@@ -565,6 +595,7 @@
     let voices = [];
     let selectedVoice = null;
     let wakeWordDetection = null;
+    let isVoiceEnabled = true;
 
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
@@ -579,6 +610,9 @@
         initWakeWordDetection();
       }
       
+      // Update voice toggle UI
+      updateVoiceToggleUI();
+      
       // Event listeners
       userInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
@@ -586,6 +620,7 @@
         }
       });
       
+      voiceToggle.addEventListener('click', toggleVoiceOutput);
       settingsBtn.addEventListener('click', openSettings);
       closeSettings.addEventListener('click', closeSettingsPanel);
       overlay.addEventListener('click', closeSettingsPanel);
@@ -682,8 +717,8 @@
       hideTypingIndicator();
       addMessage('Nova', response);
       
-      // Speak the response if enabled
-      if (speechToggle.checked && selectedVoice) {
+      // Speak the response if voice is enabled
+      if (isVoiceEnabled && speechToggle.checked && selectedVoice) {
         speak(response);
       }
     }
@@ -802,6 +837,25 @@ I'm still learning, so I might not have all the answers, but I'll do my best to 
       return formatted;
     }
 
+    // Voice Output Functions
+    function toggleVoiceOutput() {
+      isVoiceEnabled = !isVoiceEnabled;
+      updateVoiceToggleUI();
+      saveSettings();
+    }
+
+    function updateVoiceToggleUI() {
+      if (isVoiceEnabled) {
+        voiceToggle.classList.add('active');
+        voiceToggle.innerHTML = '<span class="btn-icon">🔊</span>';
+        voiceToggle.title = 'Voice output enabled (click to disable)';
+      } else {
+        voiceToggle.classList.remove('active');
+        voiceToggle.innerHTML = '<span class="btn-icon">🔇</span>';
+        voiceToggle.title = 'Voice output disabled (click to enable)';
+      }
+    }
+
     // Speech Synthesis Functions
     function initSpeechSynthesis() {
       // Load voices
@@ -849,7 +903,7 @@ I'm still learning, so I might not have all the answers, but I'll do my best to 
     }
 
     function speak(text) {
-      if (!speechSynthesis || !selectedVoice) return;
+      if (!speechSynthesis || !selectedVoice || !isVoiceEnabled) return;
       
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.voice = selectedVoice;
@@ -1008,13 +1062,19 @@ I'm still learning, so I might not have all the answers, but I'll do my best to 
           document.body.classList.add('light-mode');
         }
       }
+      
+      if (settings.voiceEnabled !== undefined) {
+        isVoiceEnabled = settings.voiceEnabled;
+        updateVoiceToggleUI();
+      }
     }
 
     function saveSettings() {
       const settings = {
         speechEnabled: speechToggle.checked,
         wakeWordEnabled: wakeWordToggle.checked,
-        darkMode: darkModeToggle.checked
+        darkMode: darkModeToggle.checked,
+        voiceEnabled: isVoiceEnabled
       };
       
       localStorage.setItem('novaSettings', JSON.stringify(settings));
@@ -1025,6 +1085,5 @@ I'm still learning, so I might not have all the answers, but I'll do my best to 
   </script>
 </body>
 </html>
-    
 
   
