@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat with Nova</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    #chat-box {
+      max-width: 600px;
+      width: 100%;
+      background: #1e293b;
+      padding: 1rem;
+      border-radius: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+    }
+    #user-input {
+      padding: 0.75rem;
+      width: 80%;
+      border-radius: 10px;
+      border: none;
+      margin-right: 1rem;
+    }
+    button {
+      padding: 0.75rem 1.5rem;
+      background: #38bdf8;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>🤖 Talk to Nova</h1>
+  <div id="chat-box"></div>
+  <div style="display: flex; gap: 0.5rem;">
+    <input type="text" id="user-input" placeholder="Ask Nova anything..." />
+    <button onclick="sendToNova()">Send</button>
+  </div>
+
+  <script>
+    async function sendToNova() {
+      const input = document.getElementById("user-input");
+      const chatBox = document.getElementById("chat-box");
+      const message = input.value.trim();
+      if (!message) return;
+
+      chatBox.innerHTML += `<p><b>You:</b> ${message}</p>`;
+      input.value = "";
+
+      try {
+        const res = await fetch("https://nova-api.onrender.com/nova/respond", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: message })
+        });
+        const data = await res.json();
+        chatBox.innerHTML += `<p><b>Nova:</b> ${data.response}</p>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      } catch (err) {
+        chatBox.innerHTML += `<p><b>Nova:</b> ⚠️ Error reaching the server. Please try again.</p>`;
+        console.error("Error talking to Nova:", err);
+      }
+    }
+  </script>
+</body>
+</html>
