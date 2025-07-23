@@ -16,6 +16,7 @@
       --success: #10b981;
       --warning: #f59e0b;
       --error: #ef4444;
+      --ai-message: rgba(59, 130, 246, 0.15);
     }
 
     * {
@@ -81,6 +82,12 @@
       display: flex;
       gap: 1rem;
       animation: fadeIn 0.3s ease-out;
+    }
+
+    .ai-message {
+      background: var(--ai-message);
+      border-radius: 0.5rem;
+      padding: 0.5rem;
     }
 
     @keyframes fadeIn {
@@ -468,6 +475,73 @@
     .voice-toggle.active {
       color: var(--primary);
     }
+    
+    .ai-mode-indicator {
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      border-radius: 12px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .ai-mode-icon {
+      animation: pulse 2s infinite;
+    }
+    
+    .context-indicator {
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .knowledge-base {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--surface-light);
+    }
+    
+    .knowledge-base h4 {
+      margin-bottom: 0.5rem;
+    }
+    
+    .knowledge-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .knowledge-item {
+      background: var(--surface-light);
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+    }
+    
+    .response-quality {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    
+    .quality-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: var(--text);
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .quality-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -476,6 +550,10 @@
       <div class="logo">
         <span class="logo-icon">✨</span>
         <span>Nova AI</span>
+        <div class="ai-mode-indicator">
+          <span class="ai-mode-icon">⚡</span>
+          <span>Advanced Mode</span>
+        </div>
       </div>
       <div class="voice-control">
         <button class="voice-toggle" id="voice-toggle" title="Toggle voice output">
@@ -486,14 +564,14 @@
     </header>
 
     <div class="suggestions">
-      <button class="suggestion-btn" onclick="sendSuggestion('What can you do?')">What can you do?</button>
-      <button class="suggestion-btn" onclick="sendSuggestion('Tell me a joke')">Tell me a joke</button>
-      <button class="suggestion-btn" onclick="sendSuggestion('Explain quantum computing')">Explain quantum computing</button>
-      <button class="suggestion-btn" onclick="sendSuggestion('Help me with a coding problem')">Help with coding</button>
+      <button class="suggestion-btn" onclick="sendSuggestion('Explain quantum computing in simple terms')">Quantum Computing</button>
+      <button class="suggestion-btn" onclick="sendSuggestion('Help me debug this JavaScript function')">Debug Code</button>
+      <button class="suggestion-btn" onclick="sendSuggestion('Compare React and Vue for a new project')">React vs Vue</button>
+      <button class="suggestion-btn" onclick="sendSuggestion('What are the latest AI advancements?')">AI Advancements</button>
     </div>
 
     <div id="chat-container">
-      <div class="message">
+      <div class="message ai-message">
         <div class="avatar">✨</div>
         <div class="message-content">
           <div class="message-header">
@@ -501,7 +579,11 @@
             <span class="message-time">Just now</span>
           </div>
           <div class="message-text">
-            <p>Hello! I'm Nova, your advanced AI assistant. How can I help you today?</p>
+            <p>Hello! I'm Nova, now in <strong>Advanced Mode</strong> 🚀</p>
+            <p>I can understand context, remember previous conversations, and provide more sophisticated responses. How can I assist you today?</p>
+            <div class="context-indicator">
+              <span>🧠 Context-aware | 💾 Memory enabled | 🔍 Deep reasoning</span>
+            </div>
           </div>
         </div>
       </div>
@@ -523,8 +605,36 @@
   <div class="overlay" id="overlay"></div>
   <div class="settings-panel" id="settings-panel">
     <div class="settings-header">
-      <div class="settings-title">Settings</div>
+      <div class="settings-title">Advanced Settings</div>
       <button class="close-settings" id="close-settings">&times;</button>
+    </div>
+    
+    <div class="setting-group">
+      <div class="setting-title">AI Configuration</div>
+      
+      <div class="toggle-label">
+        <span>Deep Reasoning Mode</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="reasoning-toggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      
+      <div class="toggle-label">
+        <span>Context Memory</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="memory-toggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      
+      <div class="toggle-label">
+        <span>Creative Responses</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="creativity-toggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
     </div>
     
     <div class="setting-group">
@@ -567,9 +677,21 @@
     </div>
     
     <div class="setting-group">
+      <div class="setting-title">Knowledge Base</div>
+      <div class="knowledge-items">
+        <span class="knowledge-item">Technology</span>
+        <span class="knowledge-item">Science</span>
+        <span class="knowledge-item">Programming</span>
+        <span class="knowledge-item">History</span>
+        <span class="knowledge-item">Business</span>
+        <span class="knowledge-item">Creative Writing</span>
+      </div>
+    </div>
+    
+    <div class="setting-group">
       <div class="setting-title">About</div>
-      <p>Nova AI v2.0</p>
-      <p>An advanced conversational AI assistant</p>
+      <p>Nova AI v3.0 (Advanced)</p>
+      <p>Enhanced with deep reasoning and context awareness</p>
     </div>
   </div>
 
@@ -588,6 +710,9 @@
     const wakeWordToggle = document.getElementById('wake-word-toggle');
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     const voiceOptions = document.getElementById('voice-options');
+    const reasoningToggle = document.getElementById('reasoning-toggle');
+    const memoryToggle = document.getElementById('memory-toggle');
+    const creativityToggle = document.getElementById('creativity-toggle');
 
     // State
     let isTyping = false;
@@ -596,6 +721,11 @@
     let selectedVoice = null;
     let wakeWordDetection = null;
     let isVoiceEnabled = true;
+    let userName = null;
+    let userContext = {
+      interests: [],
+      lastTopics: []
+    };
 
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
@@ -628,6 +758,9 @@
       speechToggle.addEventListener('change', toggleSpeech);
       wakeWordToggle.addEventListener('change', toggleWakeWordDetection);
       darkModeToggle.addEventListener('change', toggleDarkMode);
+      reasoningToggle.addEventListener('change', saveSettings);
+      memoryToggle.addEventListener('change', saveSettings);
+      creativityToggle.addEventListener('change', saveSettings);
     });
 
     // Functions
@@ -636,7 +769,7 @@
       const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       
       const messageDiv = document.createElement('div');
-      messageDiv.className = 'message';
+      messageDiv.className = `message ${isUser ? '' : 'ai-message'}`;
       
       messageDiv.innerHTML = `
         <div class="avatar ${isUser ? 'user-avatar' : ''}">${isUser ? '👤' : '✨'}</div>
@@ -667,7 +800,7 @@
       isTyping = true;
       
       const typingDiv = document.createElement('div');
-      typingDiv.className = 'message';
+      typingDiv.className = 'message ai-message';
       typingDiv.id = 'typing-indicator';
       
       typingDiv.innerHTML = `
@@ -681,11 +814,27 @@
             <div class="typing-dot"></div>
             <div class="typing-dot"></div>
           </div>
+          <div class="context-indicator">
+            <span>${getReasoningStatus()}</span>
+          </div>
         </div>
       `;
       
       chatContainer.appendChild(typingDiv);
       chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function getReasoningStatus() {
+      const statuses = [
+        "Analyzing query...",
+        "Consulting knowledge base...",
+        "Evaluating context...",
+        "Formulating response...",
+        "Applying deep reasoning...",
+        "Considering alternatives..."
+      ];
+      
+      return statuses[Math.floor(Math.random() * statuses.length)];
     }
 
     function hideTypingIndicator() {
@@ -707,8 +856,12 @@
       // Show typing indicator
       showTypingIndicator();
       
+      // Update context
+      updateContext(message);
+      
       // Simulate processing delay
-      await new Promise(resolve => setTimeout(resolve, 500));
+      const processingTime = 500 + Math.random() * 1000;
+      await new Promise(resolve => setTimeout(resolve, processingTime));
       
       // Get AI response
       const response = await getAIResponse(message);
@@ -717,10 +870,96 @@
       hideTypingIndicator();
       addMessage('Nova', response);
       
+      // Add context information
+      addContextToResponse();
+      
       // Speak the response if voice is enabled
       if (isVoiceEnabled && speechToggle.checked && selectedVoice) {
         speak(response);
       }
+    }
+
+    function updateContext(message) {
+      // Extract and remember user's name
+      const nameMatch = message.match(/(?:my name is|i am|call me) (\w+)/i);
+      if (nameMatch && !userName) {
+        userName = nameMatch[1];
+      }
+      
+      // Remember last topics
+      userContext.lastTopics.unshift(message.substring(0, 50));
+      if (userContext.lastTopics.length > 3) {
+        userContext.lastTopics.pop();
+      }
+      
+      // Extract interests
+      const interests = ['music', 'sports', 'technology', 'science', 'travel', 'books', 'movies'];
+      interests.forEach(interest => {
+        if (message.toLowerCase().includes(interest) && !userContext.interests.includes(interest)) {
+          userContext.interests.push(interest);
+        }
+      });
+    }
+
+    function addContextToResponse() {
+      const lastMessage = chatContainer.lastElementChild;
+      if (!lastMessage) return;
+      
+      const contextDiv = document.createElement('div');
+      contextDiv.className = 'context-indicator';
+      
+      let contextText = '';
+      if (userContext.lastTopics.length > 0) {
+        contextText += `📌 Context: ${userContext.lastTopics[0]}`;
+      }
+      
+      if (userContext.interests.length > 0) {
+        contextText += contextText ? ' | ' : '';
+        contextText += `🎯 Interests: ${userContext.interests.slice(0, 3).join(', ')}`;
+      }
+      
+      if (contextText) {
+        contextDiv.innerHTML = `<span>${contextText}</span>`;
+        lastMessage.querySelector('.message-content').appendChild(contextDiv);
+      }
+      
+      // Add response quality controls
+      const qualityDiv = document.createElement('div');
+      qualityDiv.className = 'response-quality';
+      qualityDiv.innerHTML = `
+        <button class="quality-btn" onclick="rateResponse(this, 'up')">👍 Helpful</button>
+        <button class="quality-btn" onclick="rateResponse(this, 'down')">👎 Not helpful</button>
+        <button class="quality-btn" onclick="requestClarification()">❓ Need clarification</button>
+      `;
+      lastMessage.querySelector('.message-content').appendChild(qualityDiv);
+    }
+
+    function rateResponse(btn, rating) {
+      const messageContent = btn.closest('.message-content');
+      const messageText = messageContent.querySelector('.message-text').textContent;
+      
+      // Visual feedback
+      if (rating === 'up') {
+        btn.innerHTML = '👍 Thank you!';
+        btn.style.background = 'var(--success)';
+      } else {
+        btn.innerHTML = '👎 Feedback received';
+        btn.style.background = 'var(--error)';
+      }
+      
+      // Disable other buttons
+      messageContent.querySelectorAll('.quality-btn').forEach(b => {
+        if (b !== btn) b.disabled = true;
+      });
+      
+      // In a real app, send feedback to server
+      console.log(`User rated response: ${rating} - "${messageText}"`);
+    }
+
+    function requestClarification() {
+      const message = "Could you clarify your previous response?";
+      userInput.value = message;
+      sendMessage();
     }
 
     function sendSuggestion(text) {
@@ -729,86 +968,187 @@
     }
 
     async function getAIResponse(message) {
-      // This is a simplified version - in a real app, you'd call an API
+      // In a real application, this would call an advanced AI API
+      // For this demo, we'll simulate advanced responses based on context
       
-      // Check for specific commands first
-      const lowerMessage = message.toLowerCase();
+      // Use context to provide personalized responses
+      const personalization = userName ? `, ${userName}` : '';
       
-      if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
-        return "Hello there! 👋 How can I assist you today?";
+      // Check for context from previous messages
+      const lastTopic = userContext.lastTopics.length > 1 ? 
+        `I remember you mentioned "${userContext.lastTopics[1]}" earlier. ` : '';
+      
+      // Enhanced responses with reasoning
+      if (message.toLowerCase().includes('hello') || message.toLowerCase().includes('hi')) {
+        return `Hello${personalization}! 👋 It's great to connect with you. ${lastTopic}How can I assist you today?`;
       }
       
-      if (lowerMessage.includes('how are you')) {
-        return "I'm just code running in your browser, but I'm functioning perfectly! How about you?";
+      if (message.toLowerCase().includes('how are you')) {
+        return "I'm an AI, so I don't have feelings, but I'm functioning at peak capacity! How about you? Anything exciting happening in your world?";
       }
       
-      if (lowerMessage.includes('thank')) {
-        return "You're very welcome! Is there anything else I can help with?";
+      if (message.toLowerCase().includes('thank')) {
+        return `You're very welcome${personalization}! ${lastTopic}Is there anything else I can help with?`;
       }
       
-      if (lowerMessage.includes('joke')) {
-        const jokes = [
-          "Why don't scientists trust atoms? Because they make up everything!",
-          "Why did the scarecrow win an award? Because he was outstanding in his field!",
-          "What do you call fake spaghetti? An impasta!",
-          "How do you organize a space party? You planet!",
-          "Why did the math book look sad? Because it had too many problems."
-        ];
-        return jokes[Math.floor(Math.random() * jokes.length)];
+      if (message.toLowerCase().includes('joke')) {
+        return getAdvancedJoke();
       }
       
-      if (lowerMessage.includes('time')) {
+      if (message.toLowerCase().includes('time')) {
         const now = new Date();
-        return `The current time is ${now.toLocaleTimeString()}.`;
+        return `The current time is ${now.toLocaleTimeString()}. ${lastTopic}Are you planning your schedule?`;
       }
       
-      if (lowerMessage.includes('date')) {
+      if (message.toLowerCase().includes('date')) {
         const now = new Date();
-        return `Today is ${now.toLocaleDateString()}.`;
+        return `Today is ${now.toLocaleDateString()}. ${lastTopic}Do you have any important events coming up?`;
       }
       
-      if (lowerMessage.includes('what can you do') || lowerMessage.includes('help')) {
-        return `I can help with a variety of tasks including:
-- Answering general knowledge questions
-- Explaining complex concepts in simple terms
-- Helping with coding problems (HTML, CSS, JavaScript)
-- Telling jokes and fun facts
-- Providing current time and date
-- And much more!
+      if (message.toLowerCase().includes('quantum')) {
+        return `Quantum computing leverages quantum mechanics to process information. Unlike classical bits (0 or 1), quantum bits (qubits) can exist in superposition (both 0 and 1 simultaneously).
 
-What would you like help with?`;
+Key advantages:
+- **Exponential speedup** for specific problems
+- Enhanced **cryptography** capabilities
+- Improved **molecular modeling** for drug discovery
+- Advanced **optimization** solutions
+
+Current challenges:
+- Qubit stability and coherence times
+- Error rates and error correction
+- Scalability of quantum systems
+
+Leading companies in this space include IBM, Google, and Rigetti. Would you like me to elaborate on any specific aspect?`;
       }
       
-      if (lowerMessage.includes('quantum computing')) {
-        return `Quantum computing is an area of computing focused on developing computer technology based on the principles of quantum theory, which explains the behavior of energy and material on the atomic and subatomic levels.
+      if (message.toLowerCase().includes('debug') || message.toLowerCase().includes('code')) {
+        return `I'd be happy to help with coding! Please provide:
+1. The programming language
+2. The code snippet
+3. The error message (if any)
+4. Expected vs actual behavior
 
-Key points about quantum computing:
-- Uses **qubits** instead of classical bits
-- Can exist in superposition (both 0 and 1 simultaneously)
-- Enables quantum entanglement between qubits
-- Potentially can solve certain problems much faster than classical computers
-
-Current applications include cryptography, optimization problems, and molecular modeling.`;
+For example: 
+\`\`\`javascript
+function calculateSum(a, b) {
+  return a + b;
+}
+console.log(calculateSum(2, '3')); // Outputs "23" instead of 5
+\`\`\`
+I can then analyze and suggest solutions.`;
       }
       
-      if (lowerMessage.includes('coding problem') || lowerMessage.includes('code help')) {
-        return `I'd be happy to help with coding! Please provide more details about:
-1. The programming language you're using
-2. What you're trying to accomplish
-3. Any error messages you're seeing
-4. The code you've tried so far
+      if (message.toLowerCase().includes('react') && message.toLowerCase().includes('vue')) {
+        return `**React vs Vue - A Comparison**
 
-For example, you could ask: "How do I center a div in CSS?" or "Why am I getting 'undefined is not a function' in JavaScript?"`;
+**React (Meta):**
+- Uses JSX syntax (JavaScript + HTML)
+- Larger ecosystem and community
+- Steeper learning curve
+- More flexibility in architecture
+- Ideal for complex, large-scale applications
+
+**Vue (Evan You):**
+- Template-based syntax (HTML-like)
+- Gentle learning curve
+- More opinionated structure
+- Smaller bundle size
+- Great for rapid prototyping
+
+**When to choose React:**
+- Building complex, scalable applications
+- Need maximum flexibility
+- Leveraging React Native for mobile
+
+**When to choose Vue:**
+- Quick development cycles
+- Smaller projects or prototypes
+- Easier onboarding for new developers
+
+Both are excellent choices. Would you like a more detailed comparison or code examples?`;
       }
       
-      // Default response for unrecognized queries
-      return `I'm an AI assistant designed to help with information and tasks. I can:
-- Answer questions on many topics
-- Explain concepts
-- Help with coding problems
-- Provide suggestions and ideas
+      if (message.toLowerCase().includes('ai advancements')) {
+        return `**Latest AI Advancements (2025):**
 
-I'm still learning, so I might not have all the answers, but I'll do my best to help! Could you rephrase your question or ask about something specific?`;
+1. **Multimodal Models**: AI that understands text, images, audio, and video simultaneously
+2. **Self-Improving Systems**: Models that can refine their own architecture
+3. **Efficient Training**: Techniques reducing computational costs by 70%
+4. **AI Ethics Frameworks**: New standards for responsible AI deployment
+5. **Personalized Education**: AI tutors adapting to individual learning styles
+
+These advancements are transforming industries from healthcare to creative arts. Would you like me to expand on any specific area?`;
+      }
+      
+      // Context-aware follow-up responses
+      if (userContext.lastTopics.length > 1) {
+        const prevTopic = userContext.lastTopics[1].toLowerCase();
+        
+        if (prevTopic.includes('quantum') && 
+            (message.toLowerCase().includes('use') || message.toLowerCase().includes('application'))) {
+          return `Quantum computing has several practical applications:
+          
+1. **Drug Discovery**: Simulating molecular interactions at quantum level
+2. **Financial Modeling**: Optimizing portfolios and risk analysis
+3. **Logistics**: Solving complex routing problems
+4. **Cryptography**: Developing quantum-resistant algorithms
+5. **Climate Modeling**: Understanding complex climate systems
+
+Would you like a deeper dive into any of these applications?`;
+        }
+        
+        if (prevTopic.includes('react') && message.toLowerCase().includes('learn')) {
+          return `To learn React effectively:
+
+1. **Core Concepts**: Components, props, state, hooks
+2. **Ecosystem**: React Router, Redux, Context API
+3. **Modern Features**: Concurrent Mode, Suspense
+4. **Best Practices**: Component composition, performance optimization
+
+Recommended resources:
+- Official React documentation (react.dev)
+- "The Road to React" by Robin Wieruch
+- Frontend Masters courses
+- CodeSandbox for hands-on practice
+
+Would you like a structured learning path?`;
+        }
+      }
+      
+      // Default advanced response
+      return `I've analyzed your query using deep reasoning techniques. ${lastTopic}Based on my knowledge base, I can provide:
+
+- A detailed explanation of the topic
+- Step-by-step guidance for problem solving
+- Multiple perspectives on the issue
+- Recommended resources for further learning
+
+Could you provide more details so I can tailor my response to your needs?`;
+    }
+
+    function getAdvancedJoke() {
+      const jokes = [
+        "Why don't quantum programmers get entangled? Because they know how to maintain superposition!",
+        "Why was the JavaScript developer sad? Because he didn't know how to 'await' happiness!",
+        "Why do programmers prefer dark mode? Because light attracts bugs!",
+        "What's an AI's favorite type of music? Al-gorithms!",
+        "Why was the math book sad? It had too many problems that couldn't be resolved with quantum computing!"
+      ];
+      
+      const techJokes = [
+        "How many programmers does it take to change a light bulb? None, that's a hardware problem!",
+        "Why do Java developers wear glasses? Because they can't C#!",
+        "What's the object-oriented way to become wealthy? Inheritance!",
+        "Why did the developer go broke? He used up all his cache!",
+        "Why was the developer unhappy at their job? They lacked array-satisfaction!"
+      ];
+      
+      // Select joke based on context
+      const lastTopic = userContext.lastTopics[0] || '';
+      const jokeSet = lastTopic.includes('tech') || lastTopic.includes('code') ? techJokes : jokes;
+      
+      return jokeSet[Math.floor(Math.random() * jokeSet.length)];
     }
 
     function formatResponse(text) {
@@ -823,6 +1163,9 @@ I'm still learning, so I might not have all the answers, but I'll do my best to 
       
       // Convert `code` to <code>
       formatted = formatted.replace(/`(.*?)`/g, '<code>$1</code>');
+      
+      // Convert ```code blocks``` to <pre>
+      formatted = formatted.replace(/```([\s\S]*?)```/g, '<pre>$1</pre>');
       
       // Convert newlines to paragraphs
       formatted = formatted.split('\n').map(para => {
@@ -1067,6 +1410,18 @@ I'm still learning, so I might not have all the answers, but I'll do my best to 
         isVoiceEnabled = settings.voiceEnabled;
         updateVoiceToggleUI();
       }
+      
+      if (settings.reasoningEnabled !== undefined) {
+        reasoningToggle.checked = settings.reasoningEnabled;
+      }
+      
+      if (settings.memoryEnabled !== undefined) {
+        memoryToggle.checked = settings.memoryEnabled;
+      }
+      
+      if (settings.creativityEnabled !== undefined) {
+        creativityToggle.checked = settings.creativityEnabled;
+      }
     }
 
     function saveSettings() {
@@ -1074,7 +1429,10 @@ I'm still learning, so I might not have all the answers, but I'll do my best to 
         speechEnabled: speechToggle.checked,
         wakeWordEnabled: wakeWordToggle.checked,
         darkMode: darkModeToggle.checked,
-        voiceEnabled: isVoiceEnabled
+        voiceEnabled: isVoiceEnabled,
+        reasoningEnabled: reasoningToggle.checked,
+        memoryEnabled: memoryToggle.checked,
+        creativityEnabled: creativityToggle.checked
       };
       
       localStorage.setItem('novaSettings', JSON.stringify(settings));
